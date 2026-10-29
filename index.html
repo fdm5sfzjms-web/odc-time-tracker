@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ODC Time Tracker</title>
+<style>
+:root{--bg:#071b16;--panel:#102a22;--panel2:#16362b;--text:#eef8f1;--muted:#a5bdb0;--green:#65d6a1;--line:#2b4b3e;--red:#ff8c8c;--amber:#f5cc75}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#123629 0,#071b16 55%);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+.wrap{max-width:980px;margin:auto;padding:24px 16px 48px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:20px}.brand{display:flex;gap:12px;align-items:center}.logo{width:44px;height:44px;border-radius:14px;background:var(--green);color:#09251a;display:grid;place-items:center;font-weight:900;font-size:20px}.eyebrow{color:var(--green);font-size:11px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase}.title{font-size:25px;font-weight:800;letter-spacing:-.5px}.date{color:var(--muted);font-size:13px}.pill{border:1px solid var(--line);background:#102a22;border-radius:999px;padding:8px 12px;color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.card{background:linear-gradient(145deg,rgba(20,51,40,.98),rgba(13,37,29,.98));border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 12px 35px #0002}.card h2{font-size:16px;margin:0 0 16px}.timer{text-align:center;padding:12px 0 18px}.status{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;color:var(--muted);font-size:12px}.dot{width:7px;height:7px;background:var(--muted);border-radius:50%}.dot.live{background:var(--green);box-shadow:0 0 10px var(--green)}.clock{font-size:clamp(42px,9vw,66px);letter-spacing:-2px;font-weight:750;font-variant-numeric:tabular-nums;margin:14px 0 2px}.sub{color:var(--muted);font-size:13px}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}button{border:0;border-radius:12px;padding:12px 16px;font-weight:750;cursor:pointer;font-size:14px;transition:transform .12s,opacity .12s}button:active{transform:scale(.98)}button:disabled{opacity:.4;cursor:not-allowed}.primary{background:var(--green);color:#08251a}.secondary{background:#24483a;color:var(--text);border:1px solid #396451}.danger{background:#482a2a;color:#ffdede;border:1px solid #764141}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}.stat{background:#0b241b;border:1px solid var(--line);border-radius:15px;padding:13px}.label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}.value{font-size:20px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}.progress{height:9px;background:#244438;border-radius:99px;overflow:hidden;margin:14px 0 8px}.bar{height:100%;width:0;background:linear-gradient(90deg,#45b87e,#8ce6b7);border-radius:99px;transition:width .25s}.progressrow{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}.success{color:var(--green)!important}.warn{color:var(--amber)!important}.tabs{display:flex;gap:7px;margin:18px 0 14px;flex-wrap:wrap}.tab{background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px 13px}.tab.active{background:var(--green);color:#08251a;border-color:var(--green)}.section{display:none}.section.active{display:block}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px}.toolbar input,.toolbar select,.field input,.field select{background:#0a2119;border:1px solid var(--line);color:var(--text);padding:10px 11px;border-radius:10px;font:inherit;min-width:0}.toolbar input{width:150px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:490px}th,td{text-align:left;padding:12px 13px;border-bottom:1px solid #244438;font-size:13px}th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px;background:#0c251c}tr:last-child td{border-bottom:0}.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800}.badge.met{background:#174a34;color:#8ef0ba}.badge.missed{background:#492c2c;color:#ffbaba}.badge.today{background:#4a3c1e;color:#ffe09a}.empty{text-align:center;color:var(--muted);padding:28px 10px}.fieldgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{color:var(--muted);font-size:12px}.field input,.field select{width:100%}.note{font-size:12px;color:var(--muted);margin-top:12px}.mini{font-size:12px;color:var(--muted)}.footer{text-align:center;color:#759486;font-size:11px;margin-top:18px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.wrap{padding:18px 12px 36px}.card{padding:17px}.stats{grid-template-columns:repeat(3,1fr)}.value{font-size:17px}.fieldgrid{grid-template-columns:1fr}}
+</style>
+
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#071b16">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(console.error);
+  });
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="logo">O</div><div><div class="eyebrow">Workday companion</div><div class="title">ODC Time Tracker</div><div class="date" id="todayLabel"></div></div></div>
+    <div class="pill">Daily target <strong> · 6h 00m</strong></div>
+  </header>
+  <div class="grid">
+    <section class="card">
+      <h2>Current session</h2>
+      <div class="timer">
+        <div class="status"><span class="dot" id="liveDot"></span><span id="statusText">Not tracking</span></div>
+        <div class="clock" id="timer">00:00:00</div>
+        <div class="sub" id="sessionMeta">Start a session when you enter the ODC</div>
+        <div class="actions">
+          <button class="primary" id="startBtn">▶ Start session</button>
+          <button class="secondary" id="pauseBtn" disabled>Ⅱ Pause</button>
+          <button class="danger" id="stopBtn" disabled>■ End session</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="label">Today</div><div class="value" id="todayHours">0h 00m</div></div>
+        <div class="stat"><div class="label">Remaining</div><div class="value" id="remaining">6h 00m</div></div>
+        <div class="stat"><div class="label">Sessions</div><div class="value" id="sessionCount">0</div></div>
+      </div>
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <div class="progressrow"><span id="progressText">0% of daily target</span><span id="targetStatus">6 hours to go</span></div>
+    </section>
+    <section class="card">
+      <h2>Today's overview</h2>
+      <div class="stats" style="grid-template-columns:repeat(2,1fr)">
+        <div class="stat"><div class="label">First start</div><div class="value" id="firstStart">—</div></div>
+        <div class="stat"><div class="label">Last end</div><div class="value" id="lastEnd">—</div></div>
+        <div class="stat"><div class="label">Days met</div><div class="value" id="daysMet">0</div></div>
+        <div class="stat"><div class="label">This month</div><div class="value" id="monthHours">0h</div></div>
+      </div>
+      <p class="note">Only time while a session is running counts toward your 6-hour target. Paused time and breaks are excluded.</p>
+      <div class="actions" style="justify-content:flex-start"><button class="secondary" id="manualBtn">＋ Add past session</button><button class="secondary" id="exportBtn">↓ Export CSV</button></div>
+    </section>
+  </div>
+  <nav class="tabs"><button class="tab active" data-tab="history">Session history</button><button class="tab" data-tab="report">Monthly report</button><button class="tab" data-tab="settings">Settings</button></nav>
+  <section class="section active card" id="history">
+    <div class="toolbar"><h2 style="margin:0">Session history</h2><div><input type="date" id="filterDate" aria-label="Filter by date"><button class="secondary" id="clearFilter">All dates</button></div></div>
+    <div class="tablewrap"><table><thead><tr><th>Date</th><th>Start</th><th>End</th><th>Duration</th><th>Type</th></tr></thead><tbody id="historyRows"></tbody></table></div>
+    <div class="note">Tip: use “Add past session” if you forgot to start the timer. Records are stored in this browser on this device.</div>
+  </section>
+  <section class="section card" id="report">
+    <div class="toolbar"><h2 style="margin:0">Monthly report</h2><input type="month" id="monthFilter" aria-label="Choose month"></div>
+    <div class="stats"><div class="stat"><div class="label">Total ODC time</div><div class="value" id="reportTotal">0h 00m</div></div><div class="stat"><div class="label">Target met</div><div class="value" id="reportMet">0 days</div></div><div class="stat"><div class="label">Days tracked</div><div class="value" id="reportTracked">0 days</div></div></div>
+    <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th>Date</th><th>Total time</th><th>Target</th><th>Status</th></tr></thead><tbody id="reportRows"></tbody></table></div>
+  </section>
+  <section class="section card" id="settings">
+    <h2>Tracker settings</h2>
+    <div class="fieldgrid">
+      <div class="field"><label for="targetInput">Daily target (hours)</label><input id="targetInput" type="number" min="1" max="24" step=".25" value="6"></div>
+      <div class="field"><label for="workLabel">Session label</label><select id="workLabel"><option>ODC</option><option>Office</option><option>Project work</option></select></div>
+    </div>
+    <div class="actions" style="justify-content:flex-start"><button class="primary" id="saveSettings">Save settings</button><button class="danger" id="resetAll">Delete all tracker data</button></div>
+    <p class="note">Data is saved locally in this browser using local storage. It does not sync across devices. Export CSV regularly as a backup. Deleting all data cannot be undone.</p>
+  </section>
+  <div class="footer">ODC Time Tracker · Local-only prototype · Your records stay in this browser</div>
+</div>
+<script>
+const KEY='odcTrackerV1';
+const $=id=>document.getElementById(id);
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const monthNow=()=>today().slice(0,7);
+let data=load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{sessions:[],active:null,target:6,label:'ODC'}}catch{return {sessions:[],active:null,target:6,label:'ODC'}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function dur(s){return Math.max(0,Math.floor(s))}
+function fmt(sec){sec=dur(sec);let h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
+function hm(sec){sec=dur(sec);let h=Math.floor(sec/3600),m=Math.floor(sec%3600/60);return `${h}h ${String(m).padStart(2,'0')}m`}
+function time(ts){return ts?new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'—'}
+function secs(s){return s.duration+(s.startedAt&&!s.pausedAt?Math.floor((Date.now()-s.startedAt)/1000):0)}
+function todaySessions(){return data.sessions.filter(s=>s.date===today())}
+function totalFor(date){return data.sessions.filter(s=>s.date===date).reduce((n,s)=>n+s.duration,0)+(data.active&&data.active.date===date?secs(data.active):0)}
+function daysForMonth(month){const dates=[...new Set(data.sessions.filter(s=>s.date.startsWith(month)).map(s=>s.date))];if(data.active&&data.active.date.startsWith(month)&&!dates.includes(data.active.date))dates.push(data.active.date);return dates.sort()}
+function update(){
+ const a=data.active, activeSec=a?secs(a):0, total=totalFor(today()), target=data.target*3600, pct=Math.min(100,total/target*100);
+ $('todayLabel').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+ $('timer').textContent=a?fmt(activeSec):'00:00:00';
+ $('statusText').textContent=!a?'Not tracking':a.pausedAt?'Paused':'Session in progress';
+ $('liveDot').className='dot'+(a&&!a.pausedAt?' live':'');
+ $('sessionMeta').textContent=!a?'Start a session when you enter the ODC':`Started ${time(a.startedAt)} · ${a.label}`;
+ $('startBtn').disabled=!!a;$('pauseBtn').disabled=!a;$('stopBtn').disabled=!a;
+ $('pauseBtn').textContent=a&&a.pausedAt?'▶ Resume':'Ⅱ Pause';
+ $('todayHours').textContent=hm(total);$('remaining').textContent=hm(Math.max(0,target-total));$('sessionCount').textContent=todaySessions().length+(a&&a.date===today()?1:0);
+ $('bar').style.width=pct+'%';$('progressText').textContent=Math.floor(pct)+'% of daily target';
+ $('targetStatus').textContent=total>=target?'Target achieved!':hm(target-total)+' to go';$('targetStatus').className=total>=target?'success':'';
+ const ts=todaySessions();$('firstStart').textContent=ts.length?time(Math.min(...ts.map(s=>s.startedAt))):a&&a.date===today()?time(a.startedAt):'—';
+ $('lastEnd').textContent=ts.length?time(Math.max(...ts.map(s=>s.endedAt||0))):'—';
+ const month=monthNow(), dates=daysForMonth(month);$('daysMet').textContent=dates.filter(d=>totalFor(d)>=target).length;
+ $('monthHours').textContent=hm(data.sessions.filter(s=>s.date.startsWith(month)).reduce((n,s)=>n+s.duration,0)+(a&&a.date.startsWith(month)?secs(a):0));
+ renderHistory();renderReport();
+}
+function start(){if(data.active)return;data.active={date:today(),startedAt:Date.now(),originalStartedAt:Date.now(),duration:0,pausedAt:null,label:data.label};save();update()}
+function pauseResume(){const a=data.active;if(!a)return;if(a.pausedAt){a.startedAt=Date.now();a.pausedAt=null}else{a.duration+=Math.floor((Date.now()-a.startedAt)/1000);a.pausedAt=Date.now();a.startedAt=null}save();update()}
+function stop(){const a=data.active;if(!a)return;let duration=a.duration;if(!a.pausedAt)duration+=Math.floor((Date.now()-a.startedAt)/1000);if(duration>0)data.sessions.push({date:a.date,startedAt:a.originalStartedAt||a.startedAt||a.pausedAt,endedAt:Date.now(),duration,label:a.label});data.active=null;save();update()}
+function renderHistory(){let list=[...data.sessions];if(data.active)list.push({...data.active,endedAt:null,duration:secs(data.active),live:true});const filter=$('filterDate').value;if(filter)list=list.filter(s=>s.date===filter);list.sort((a,b)=>b.date.localeCompare(a.date)||b.startedAt-a.startedAt);$('historyRows').innerHTML=list.length?list.map(s=>`<tr><td>${s.date}${s.live?' <span class="badge today">LIVE</span>':''}</td><td>${time(s.startedAt)}</td><td>${s.endedAt?time(s.endedAt):s.pausedAt?'Paused':'—'}</td><td>${hm(s.duration)}</td><td>${esc(s.label||'ODC')}</td></tr>`).join(''):`<tr><td colspan="5" class="empty">No sessions yet. Start your first session above.</td></tr>`}
+function renderReport(){const month=$('monthFilter').value||monthNow();let dates=daysForMonth(month);$('reportTotal').textContent=hm(data.sessions.filter(s=>s.date.startsWith(month)).reduce((n,s)=>n+s.duration,0)+(data.active&&data.active.date.startsWith(month)?secs(data.active):0));const target=data.target*3600;let met=dates.filter(d=>totalFor(d)>=target).length;$('reportMet').textContent=met+' days';$('reportTracked').textContent=dates.length+' days';$('reportRows').innerHTML=dates.length?dates.reverse().map(d=>{let t=totalFor(d),ok=t>=target;return `<tr><td>${d}</td><td>${hm(t)}</td><td>${hm(target)}</td><td><span class="badge ${ok?'met':'missed'}">${ok?'Target met':'Below target'}</span></td></tr>`}).join(''):`<tr><td colspan="4" class="empty">No records for this month yet.</td></tr>`}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('startBtn').onclick=start;$('pauseBtn').onclick=pauseResume;$('stopBtn').onclick=stop;
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab));if(b.dataset.tab==='settings'){$('targetInput').value=data.target;$('workLabel').value=data.label}});
+$('filterDate').onchange=renderHistory;$('clearFilter').onclick=()=>{$('filterDate').value='';renderHistory()};$('monthFilter').value=monthNow();$('monthFilter').onchange=renderReport;
+$('saveSettings').onclick=()=>{let n=Number($('targetInput').value);if(!Number.isFinite(n)||n<1||n>24){alert('Enter a target between 1 and 24 hours.');return}data.target=n;data.label=$('workLabel').value;if(data.active)data.active.label=data.label;save();update();alert('Settings saved.')};
+$('manualBtn').onclick=()=>{let date=prompt('Date (YYYY-MM-DD):',today());if(!date)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){alert('Use YYYY-MM-DD format.');return}let startText=prompt('Start time (24-hour HH:MM):','09:00');if(!startText)return;let endText=prompt('End time (24-hour HH:MM):','15:00');if(!endText)return;let re=/^([01]\d|2[0-3]):[0-5]\d$/;if(!re.test(startText)||!re.test(endText)){alert('Use 24-hour HH:MM time format.');return}let st=new Date(date+'T'+startText+':00').getTime(),en=new Date(date+'T'+endText+':00').getTime();if(en<=st){alert('End time must be after start time. For overnight shifts, add separate sessions.');return}data.sessions.push({date,startedAt:st,endedAt:en,duration:Math.floor((en-st)/1000),label:data.label,manual:true});save();update()};
+$('exportBtn').onclick=()=>{let rows=[['Date','Start','End','Duration seconds','Duration','Label'],...data.sessions.map(s=>[s.date,time(s.startedAt),time(s.endedAt),s.duration,hm(s.duration),s.label||'ODC'])];let csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='odc-time-history.csv';a.click();URL.revokeObjectURL(url)};
+$('resetAll').onclick=()=>{if(confirm('Delete ALL sessions, reports, and active timer? This cannot be undone.')){localStorage.removeItem(KEY);data=load();update()}};
+if(data.active&&data.active.startedAt&&!data.active.originalStartedAt)data.active.originalStartedAt=data.active.startedAt;
+update();setInterval(update,1000);
+</script>
+</body></html>
